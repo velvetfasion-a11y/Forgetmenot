@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forget Me Not</title>
+  <link rel="icon" href="favicon.png" type="image/png" sizes="64x64">
+  <link rel="apple-touch-icon" href="logo-flower.png">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --purple: #a89fcc;
+      --purple-light: #c4bde0;
+      --purple-pale: #ece9f8;
+      --purple-deep: #7b6fb0;
+      --purple-vivid: #9b8ec4;
+      --white: #ffffff;
+      --off-white: #faf9fd;
+      --text: #2d2640;
+      --text-mid: #7a7390;
+      --text-light: #b0a8c8;
+      --shadow-soft: rgba(155,142,196,0.18);
+      --shadow-med: rgba(155,142,196,0.3);
+    }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+    html{scroll-behavior:smooth;}
+    body{font-family:'DM Sans',sans-serif;background:var(--white);color:var(--text);overflow-x:hidden;}
+
+    nav{
+      position:fixed;top:0;left:0;right:0;z-index:200;
+      display:grid;
+      grid-template-columns:1fr auto;
+      align-items:center;
+      padding:0 48px;height:66px;
+      background:rgba(255,255,255,0.88);
+      backdrop-filter:blur(20px);
+      border-bottom:1.5px solid var(--purple-pale);
+    }
+    .nav-brand{display:flex;align-items:center;gap:10px;cursor:pointer;text-decoration:none;justify-self:start;}
+    .brand-logo{width:34px;height:34px;object-fit:contain;display:block;flex-shrink:0;}
+    .nav-brand-text{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--text);}
+    .nav-right{display:flex;align-items:center;gap:10px;justify-self:end;}
+    .nav-btn{width:40px;height:40px;border-radius:50%;border:1.5px solid var(--purple-light);background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.22s;}
+    .nav-btn:hover{background:var(--purple);border-color:var(--purple);transform:scale(1.08);}
+    .nav-btn:hover svg{stroke:white;}
+    .nav-btn svg{width:17px;height:17px;stroke:var(--purple-deep);fill:none;stroke-width:1.8;transition:stroke 0.2s;}
+
+    .hero{
+      position:relative;
+      background:var(--white);
+      padding-top:66px;
+      overflow:hidden;
+      display:grid;
+      grid-template-areas:"hero-stack";
+    }
+    .hero-bg,
+    .hero-content{grid-area:hero-stack;}
+    .hero-bg{
+      z-index:0;
+      width:100%;
+      min-height:100%;
+      align-self:stretch;
+      pointer-events:none;
+      background:
+        radial-gradient(ellipse 125% 110% at 2% -8%, rgba(196, 189, 224, 0.55) 0%, transparent 58%),
+        radial-gradient(ellipse 70% 85% at 22% 28%, rgba(155, 142, 196, 0.22) 0%, transparent 52%),
+        var(--purple-pale);
+      clip-path:path("M 0 0 L 100% 0 L 100% 70% C 100% 82% 58% 93% 50% 94.5% C 42% 93% 0 82% 0 72% Z");
+    }
+    .hero-content{
+      position:relative;z-index:2;
+      display:flex;flex-direction:column;align-items:center;
+      text-align:center;
+      padding:38px 20px calc(40px + clamp(4.75rem, 10vw, 6.75rem)) 20px;
+    }
+    .flower-logo{
+      width:96px;height:96px;
+      margin-bottom:26px;
+      object-fit:contain;
+      display:block;
+      animation:floatBob 5s ease-in-out infinite;
+      filter:drop-shadow(0 10px 22px rgba(123,111,176,0.32));
+    }
+    @keyframes floatBob{0%,100%{transform:translateY(0) rotate(0deg);}50%{transform:translateY(-11px) rotate(5deg);}}
+    .hero-title{
+      font-family:'Playfair Display',serif;
+      font-size:clamp(2.6rem,6vw,4.8rem);
+      font-weight:900;
+      font-style:italic;
+      color:var(--text);
+      line-height:1.06;
+      margin-bottom:14px;
+      animation:fadeUp 0.7s ease both;
+    }
+    .hero-title .accent{
+      color:var(--purple-deep);
+      position:relative;
+      display:inline-block;
+    }
+    .hero-title .accent::after{
+      content:'';
+      position:absolute;
+      bottom:2px;left:0;right:0;
+      height:4px;
+      background:linear-gradient(90deg,var(--purple-light),var(--purple-vivid));
+      border-radius:10px;
+      opacity:0.7;
+    }
+    .hero-tagline{
+      font-size:clamp(0.9rem,2vw,1.1rem);
+      font-weight:300;
+      color:var(--text-mid);
+      letter-spacing:0.06em;
+      margin-bottom:30px;
+      animation:fadeUp 0.7s 0.12s ease both;
+    }
+    .hero-tagline em{font-style:italic;color:var(--purple-vivid);font-weight:500;}
+    .hero-cta{
+      display:inline-flex;align-items:center;gap:8px;
+      background:var(--purple-deep);color:white;
+      border:none;border-radius:50px;
+      padding:14px 34px;
+      font-family:'DM Sans',sans-serif;
+      font-size:0.8rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;
+      cursor:pointer;
+      box-shadow:0 10px 28px var(--shadow-med);
+      transition:all 0.25s;
+      animation:fadeUp 0.7s 0.24s ease both;
+    }
+    .hero-cta:hover{background:var(--text);transform:translateY(-3px);box-shadow:0 16px 34px rgba(45,38,64,0.22);}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+
+    .products-section{
+      width:100%;max-width:1040px;
+      margin:0 auto;
+      padding:50px 28px 90px;
+    }
+    .eyebrow{
+      display:flex;align-items:center;gap:12px;
+      justify-content:center;margin-bottom:36px;
+    }
+    .eyebrow-line{flex:1;max-width:70px;height:1px;background:var(--purple-light);}
+    .eyebrow-text{font-size:0.68rem;font-weight:500;letter-spacing:0.2em;text-transform:uppercase;color:var(--purple-vivid);}
+    .cards-grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:20px;
+    }
+
+    .card{
+      display:flex;flex-direction:column;
+      background:var(--white);
+      border-radius:9999px 9999px 20px 20px;
+      border:3px solid var(--purple-light);
+      overflow:hidden;cursor:pointer;
+      transition:transform 0.32s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.28s ease,border-color 0.2s;
+      animation:cardRise 0.55s ease both;
+    }
+    .card:nth-child(1){animation-delay:0.06s;}
+    .card:nth-child(2){animation-delay:0.14s;}
+    .card:nth-child(3){animation-delay:0.22s;}
+    .card:nth-child(4){animation-delay:0.3s;}
+    @keyframes cardRise{from{opacity:0;transform:translateY(32px) scale(0.95);}to{opacity:1;transform:translateY(0) scale(1);}}
+    .card:hover{
+      transform:translateY(-11px) scale(1.025);
+      box-shadow:0 28px 50px var(--shadow-med);
+      border-color:var(--purple);
+    }
+
+    .card-img{
+      flex:0 0 auto;
+      height:clamp(228px,38vw,306px);
+      min-height:228px;
+      background:#ffffff;
+      position:relative;
+      overflow:hidden;
+      padding:0;
+      box-sizing:border-box;
+    }
+    .card-img::after{
+      content:'';position:absolute;inset:0;
+      background:linear-gradient(180deg,rgba(255,255,255,0.65) 0%,transparent 38%);
+      pointer-events:none;
+      z-index:1;
+    }
+    .card-photo{
+      position:absolute;
+      inset:0;
+      z-index:0;
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      object-position:center center;
+      display:block;
+      transform:none;
+      transform-origin:center center;
+      transition:transform 0.45s ease,filter 0.35s ease;
+      filter:brightness(1.1) contrast(1.03) saturate(1.02);
+      image-rendering:auto;
+    }
+    .card:hover .card-photo{transform:scale(1.06);}
+    .card-footer{
+      background:var(--purple-light);
+      padding:12px 16px;
+      display:flex;align-items:center;gap:10px;
+    }
+    .card-info{flex:1;}
+    .card-name{display:block;font-size:0.76rem;font-weight:500;color:var(--text);margin-bottom:1px;}
+    .card-price{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;color:var(--purple-deep);}
+
+    .cart-btn{
+      width:36px;height:36px;border-radius:50%;
+      background:white;border:none;
+      display:flex;align-items:center;justify-content:center;
+      cursor:pointer;flex-shrink:0;
+      box-shadow:0 2px 10px var(--shadow-soft);
+      transition:background 0.2s,transform 0.2s,opacity 0.2s;
+    }
+    .cart-btn:hover:not(:disabled){background:var(--purple-deep);transform:scale(1.12) rotate(-12deg);}
+    .cart-btn:hover:not(:disabled) svg{stroke:white;}
+    .cart-btn:disabled{opacity:0.65;cursor:wait;transform:none;}
+    .cart-btn svg{width:16px;height:16px;stroke:var(--purple-deep);fill:none;stroke-width:1.9;transition:stroke 0.2s;}
+
+    #product-page{display:none;min-height:100vh;padding-top:66px;background:var(--off-white);}
+    .pd-wrap{max-width:980px;margin:0 auto;padding:20px 22px 80px;}
+    .pd-layout{
+      display:grid;
+      grid-template-columns:minmax(0,440px) minmax(0,1fr);
+      gap:clamp(24px,4vw,44px);
+      align-items:start;
+    }
+    .pd-col-media{min-width:0;}
+    .pd-col-copy{min-width:0;}
+    .pd-back{
+      display:inline-flex;align-items:center;gap:6px;
+      background:none;border:none;
+      font-family:'DM Sans',sans-serif;font-size:0.78rem;font-weight:500;
+      letter-spacing:0.1em;text-transform:uppercase;color:var(--purple-deep);
+      cursor:pointer;margin-bottom:22px;padding:6px 0;
+    }
+    .pd-back:hover{color:var(--text);}
+    .pd-eyeb-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+    .pd-eyeb-line{width:32px;height:1.5px;background:var(--purple-deep);opacity:0.45;border-radius:2px;}
+    .pd-eyeb{font-size:0.68rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--purple-deep);font-weight:500;}
+    .pd-title{
+      font-family:'Playfair Display',serif;
+      font-size:clamp(1.85rem,5.2vw,2.45rem);font-weight:900;font-style:italic;
+      line-height:1.1;margin-bottom:18px;color:var(--text);
+    }
+    .pd-hero{
+      position:relative;
+      border-radius:20px;overflow:hidden;background:var(--white);
+      border:3px solid var(--purple-deep);
+      box-shadow:0 0 0 1px var(--purple-pale),0 14px 40px var(--shadow-soft);
+      aspect-ratio:1/1;width:100%;max-width:440px;
+      margin:0;
+    }
+    .pd-hero img{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      object-position:center;
+      display:block;
+    }
+    .pd-desc-wrap{
+      border-left:3px solid var(--purple-light);margin-bottom:24px;padding-left:18px;
+    }
+    .pd-desc{font-size:0.93rem;line-height:1.68;color:var(--text-mid);font-weight:300;}
+    .pd-price-row{display:flex;align-items:baseline;gap:12px;margin-bottom:22px;flex-wrap:wrap;}
+    .pd-price{font-family:'Playfair Display',serif;font-size:clamp(1.85rem,5vw,2.25rem);font-weight:700;color:var(--text);}
+    .pd-unit{font-size:0.84rem;color:var(--text-light);font-weight:400;}
+    .pd-actions{display:flex;flex-direction:column;gap:11px;margin-bottom:36px;}
+    .pd-actions .btn-p{border-radius:12px;padding:15px 24px;}
+    .pd-actions .btn-s{border-radius:12px;padding:15px 24px;}
+    .pd-features{
+      border-top:1.5px solid var(--purple-pale);border-bottom:1.5px solid var(--purple-pale);
+      padding:22px 0;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;
+    }
+    .pd-ft strong{display:block;font-size:0.64rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text);margin-bottom:5px;font-weight:600;}
+    .pd-ft span{font-size:0.74rem;color:var(--text-light);line-height:1.45;font-weight:400;}
+
+    #profile-page{display:none;min-height:100vh;padding-top:66px;}
+    .profile-band{
+      background:var(--purple-pale);height:210px;
+      position:relative;border-radius:0 0 56px 56px;
+      display:flex;align-items:flex-end;justify-content:center;
+      overflow:hidden;
+    }
+    .profile-band::before{
+      content:'';position:absolute;inset:0;
+      background:radial-gradient(ellipse at 35% 55%,rgba(255,255,255,0.4) 0%,transparent 70%);
+    }
+    .band-deco{
+      position:absolute;top:18px;right:36px;
+      opacity:0.25;animation:floatBob 6s 1s ease-in-out infinite;
+    }
+    .band-deco .deco-flower{width:72px;height:72px;object-fit:contain;display:block;}
+    .profile-av-wrap{position:relative;margin-bottom:-48px;z-index:3;}
+    .profile-av{
+      width:96px;height:96px;border-radius:50%;
+      background:white;border:4px solid white;
+      box-shadow:0 10px 30px var(--shadow-med);
+      display:flex;align-items:center;justify-content:center;
+    }
+    .profile-av svg{width:56px;height:56px;stroke:var(--purple-light);fill:none;stroke-width:1.4;}
+    .av-edit{
+      position:absolute;bottom:4px;right:4px;
+      width:28px;height:28px;border-radius:50%;
+      background:var(--purple-deep);border:2px solid white;
+      display:flex;align-items:center;justify-content:center;cursor:pointer;
+    }
+    .av-edit svg{width:12px;height:12px;stroke:white;fill:none;stroke-width:2.2;}
+    .profile-body{
+      max-width:700px;margin:0 auto;
+      padding:68px 24px 80px;
+      display:flex;flex-direction:column;align-items:center;gap:8px;
+    }
+    .profile-name{
+      font-family:'Playfair Display',serif;
+      font-size:2rem;font-weight:700;font-style:italic;color:var(--text);
+    }
+    .profile-handle{font-size:0.76rem;color:var(--text-light);letter-spacing:0.1em;}
+    .profile-pill{
+      display:inline-flex;align-items:center;gap:6px;
+      background:var(--purple-pale);border:1.5px solid var(--purple-light);
+      padding:6px 16px;border-radius:30px;
+      font-size:0.7rem;font-weight:500;color:var(--purple-deep);letter-spacing:0.07em;
+      margin-top:4px;
+    }
+    .profile-pill svg{width:11px;height:11px;fill:var(--purple);}
+    .stats-bar{
+      display:flex;width:100%;
+      background:var(--purple-pale);border-radius:18px;
+      border:1.5px solid var(--purple-light);
+      overflow:hidden;margin-top:22px;
+    }
+    .stat{
+      flex:1;padding:18px 0;
+      display:flex;flex-direction:column;align-items:center;gap:3px;
+      border-right:1.5px solid var(--purple-light);
+    }
+    .stat:last-child{border-right:none;}
+    .stat-n{font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;color:var(--purple-deep);}
+    .stat-l{font-size:0.66rem;font-weight:400;letter-spacing:0.13em;text-transform:uppercase;color:var(--text-mid);}
+    .rule{width:100%;height:1.5px;background:var(--purple-pale);margin:22px 0 4px;}
+    .sec-title{font-size:0.68rem;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-light);align-self:flex-start;margin-bottom:14px;}
+    .wl-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;width:100%;}
+    .wl-card{
+      border-radius:9999px 9999px 16px 16px;
+      border:2.5px solid var(--purple-light);overflow:hidden;background:white;
+      cursor:default;transition:transform 0.25s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.25s,border-color 0.2s;
+    }
+    .wl-card:hover{transform:translateY(-5px);box-shadow:0 14px 30px var(--shadow-soft);border-color:var(--purple);}
+    .wl-img{
+      height:132px;min-height:132px;
+      background:#ffffff;
+      position:relative;overflow:hidden;
+      padding:0;
+      box-sizing:border-box;
+    }
+    .wl-photo{
+      position:absolute;
+      inset:0;
+      width:100%;height:100%;
+      object-fit:contain;
+      object-position:center center;
+      display:block;
+      filter:brightness(1.08) contrast(1.02);
+    }
+    .wl-foot{background:var(--purple-light);padding:9px 14px;display:flex;align-items:center;justify-content:space-between;}
+    .wl-price{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--purple-deep);}
+    .acct-card{
+      width:100%;background:var(--off-white);
+      border-radius:22px;border:1.5px solid var(--purple-pale);overflow:hidden;
+    }
+    .acct-row{
+      display:flex;align-items:center;gap:14px;
+      padding:15px 20px;border-bottom:1.5px solid var(--purple-pale);
+      transition:background 0.15s;cursor:pointer;
+    }
+    .acct-row:last-child{border-bottom:none;}
+    .acct-row:hover{background:var(--purple-pale);}
+    .acct-icon{
+      width:38px;height:38px;border-radius:11px;
+      background:var(--purple-pale);
+      display:flex;align-items:center;justify-content:center;flex-shrink:0;
+    }
+    .acct-icon svg{width:18px;height:18px;stroke:var(--purple-deep);fill:none;stroke-width:1.8;}
+    .acct-txt strong{display:block;font-size:0.78rem;font-weight:500;color:var(--text);}
+    .acct-txt span{font-size:0.7rem;color:var(--text-light);}
+    .acct-arr{margin-left:auto;}
+    .acct-arr svg{width:15px;height:15px;stroke:var(--text-light);fill:none;stroke-width:2;}
+    .btn-row{display:flex;gap:12px;margin-top:14px;width:100%;}
+    .btn-p{
+      flex:1;background:var(--purple-deep);color:white;
+      border:none;border-radius:50px;padding:13px 24px;
+      font-family:'DM Sans',sans-serif;font-size:0.78rem;font-weight:500;
+      letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;
+      box-shadow:0 6px 18px var(--shadow-soft);transition:all 0.22s;
+    }
+    .btn-p:hover{background:var(--text);transform:translateY(-2px);}
+    .btn-s{
+      background:var(--white);color:var(--purple-deep);
+      border:1.5px solid var(--purple-light);
+      border-radius:50px;padding:13px 24px;
+      font-family:'DM Sans',sans-serif;font-size:0.78rem;font-weight:500;
+      letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;transition:all 0.22s;
+    }
+    .btn-s:hover{background:var(--purple-pale);}
+
+    #auth-page{display:none;min-height:100vh;padding-top:66px;}
+    .auth-band{
+      background:var(--purple-pale);height:120px;
+      position:relative;border-radius:0 0 48px 48px;
+      overflow:hidden;
+    }
+    .auth-band::before{
+      content:'';position:absolute;inset:0;
+      background:radial-gradient(ellipse at 20% 30%,rgba(255,255,255,0.45) 0%,transparent 65%);
+    }
+    .auth-wrap{
+      max-width:420px;margin:-32px auto 0;
+      padding:0 22px 60px;
+      position:relative;z-index:2;
+    }
+    .auth-card{
+      background:var(--white);
+      border-radius:22px;
+      border:1.5px solid var(--purple-light);
+      box-shadow:0 16px 40px var(--shadow-soft);
+      padding:26px 22px 28px;
+    }
+    .auth-toggle{
+      display:flex;margin-bottom:20px;
+      border-radius:999px;background:var(--purple-pale);
+      padding:4px;gap:4px;
+    }
+    .auth-tab{
+      flex:1;border:none;background:transparent;
+      font-family:'DM Sans',sans-serif;font-size:0.72rem;font-weight:500;
+      letter-spacing:0.08em;text-transform:uppercase;
+      color:var(--text-mid);padding:10px 12px;border-radius:999px;
+      cursor:pointer;transition:background 0.2s,color 0.2s;
+    }
+    .auth-tab.is-on{background:var(--white);color:var(--purple-deep);box-shadow:0 2px 8px var(--shadow-soft);}
+    .auth-form{display:flex;flex-direction:column;gap:12px;}
+    .auth-label{font-size:0.68rem;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-light);margin-top:2px;}
+    .auth-input{
+      width:100%;padding:13px 16px;border-radius:14px;
+      border:1.5px solid var(--purple-light);background:var(--off-white);
+      font-family:'DM Sans',sans-serif;font-size:0.92rem;color:var(--text);
+      transition:border-color 0.2s,background 0.2s;
+    }
+    .auth-input:focus{outline:none;border-color:var(--purple);background:var(--white);}
+    .auth-input::placeholder{color:var(--text-light);}
+    .auth-code{letter-spacing:0.35em;font-size:1.1rem;text-align:center;font-variant-numeric:tabular-nums;}
+    .auth-hint{font-size:0.72rem;color:var(--text-mid);line-height:1.45;margin:-4px 0 2px;}
+    .auth-row{display:flex;gap:10px;align-items:stretch;}
+    .auth-row .auth-input{flex:1;}
+    .auth-check{
+      display:flex;align-items:flex-start;gap:10px;
+      font-size:0.78rem;color:var(--text-mid);line-height:1.45;cursor:pointer;
+    }
+    .auth-check input{margin-top:3px;accent-color:var(--purple-deep);flex-shrink:0;}
+    .auth-check a{color:var(--purple-deep);text-decoration:underline;}
+    .auth-submit{margin-top:6px;width:100%;}
+    .hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;}
+    #auth-back{margin-top:16px;width:100%;}
+
+    .verify-modal{
+      position:fixed;inset:0;z-index:500;display:none;
+      align-items:center;justify-content:center;padding:20px;
+      background:rgba(45,38,64,0.35);backdrop-filter:blur(6px);
+    }
+    .verify-modal.is-open{display:flex;}
+    .verify-modal-card{
+      width:100%;max-width:380px;background:var(--white);
+      border-radius:22px;border:1.5px solid var(--purple-light);
+      box-shadow:0 24px 60px rgba(123,111,176,0.35);
+      padding:26px 22px 22px;text-align:center;
+    }
+    .verify-modal-card h3{
+      font-family:'Playfair Display',serif;font-size:1.35rem;font-style:italic;
+      color:var(--text);margin:0 0 8px;
+    }
+    .verify-modal-card p{font-size:0.82rem;color:var(--text-mid);line-height:1.5;margin:0 0 18px;}
+    .verify-actions{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+    .verify-link{
+      background:none;border:none;color:var(--purple-deep);
+      font-family:'DM Sans',sans-serif;font-size:0.78rem;text-decoration:underline;
+      cursor:pointer;padding:6px;
+    }
+    .verify-cancel{
+      background:var(--white);color:var(--text-mid);
+      border:1.5px solid var(--purple-light);border-radius:50px;
+      padding:11px 20px;font-family:'DM Sans',sans-serif;font-size:0.76rem;
+      font-weight:500;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;
+    }
+    .verify-cancel:hover{background:var(--purple-pale);}
+
+    .toast{
+      position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(120%);
+      background:var(--text);color:#fff;padding:12px 20px;border-radius:12px;
+      font-size:0.8rem;z-index:400;box-shadow:0 12px 30px rgba(0,0,0,0.2);
+      opacity:0;transition:transform 0.35s ease,opacity 0.35s ease;
+      max-width:min(92vw,420px);text-align:center;
+    }
+    .toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+
+    @media(max-width:820px){
+      .pd-layout{grid-template-columns:1fr;gap:22px;}
+      .pd-hero{max-width:min(100%,380px);margin:0 auto;}
+    }
+    @media(max-width:700px){
+      nav{padding:0 18px;}
+      .hero-content{padding:28px 16px calc(32px + clamp(3.75rem, 12vw, 5.5rem)) 16px;}
+      .flower-logo{width:72px;height:72px;margin-bottom:20px;}
+      .brand-logo{width:30px;height:30px;}
+      .cards-grid{grid-template-columns:repeat(2,1fr);gap:14px;}
+      .products-section{padding:32px 16px 60px;}
+      .card-img{min-height:188px;height:clamp(188px,48vw,260px);}
+      .wl-grid{grid-template-columns:repeat(2,1fr);}
+      .btn-row{flex-direction:column;}
+      .pd-features{grid-template-columns:1fr;gap:20px;}
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand" id="nav-home">
+    <img class="brand-logo" src="logo-flower.png" width="1024" height="1024" alt="" decoding="async">
+    <span class="nav-brand-text">Forget Me Not</span>
+  </div>
+  <div class="nav-right">
+    <button type="button" class="nav-btn" id="nav-cart-btn" aria-label="Scroll to shop">
+      <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+    </button>
+    <button type="button" class="nav-btn" id="nav-profile-btn" aria-label="Open profile">
+      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </button>
+  </div>
+</nav>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<div id="verify-modal" class="verify-modal" role="dialog" aria-modal="true" aria-labelledby="verify-title" aria-hidden="true">
+  <div class="verify-modal-card">
+    <h3 id="verify-title">Enter verification code</h3>
+    <p id="verify-sub">We sent a 4-digit code. Check your inbox (or the server terminal in development).</p>
+    <label class="auth-label" for="mv-code">4-digit code</label>
+    <input type="text" id="mv-code" class="auth-input auth-code" maxlength="4" inputmode="numeric" pattern="[0-9]*" placeholder="••••" autocomplete="one-time-code">
+    <div class="verify-actions">
+      <button type="button" class="btn-p auth-submit" id="mv-verify">Verify &amp; finish</button>
+      <button type="button" class="verify-link" id="mv-resend">Resend code</button>
+      <button type="button" class="verify-cancel" id="mv-cancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div id="main-page">
+  <section class="hero">
+    <div class="hero-bg" aria-hidden="true"></div>
+    <div class="hero-content">
+      <img class="flower-logo" src="logo-flower.png" width="1024" height="1024" alt="Forget Me Not" decoding="async">
+      <h1 class="hero-title">Forget <span class="accent">Me</span> Not</h1>
+      <p class="hero-tagline">Connect with your partner <em>in home and mind</em></p>
+      <button type="button" class="hero-cta" id="hero-shop-btn">✿ &nbsp;Shop Together</button>
+    </div>
+  </section>
+
+  <section class="products-section" id="shop">
+    <div class="eyebrow">
+      <div class="eyebrow-line"></div>
+      <span class="eyebrow-text">Curated for Two</span>
+      <div class="eyebrow-line"></div>
+    </div>
+
+    <div class="cards-grid">
+
+      <article class="card" data-product="matching-set">
+        <div class="card-img">
+          <img class="card-photo" src="images/matching-set.png" alt="Rising flower note" width="1200" height="1200" loading="lazy" decoding="async" fetchpriority="high">
+        </div>
+        <div class="card-footer">
+          <div class="card-info">
+            <span class="card-name">Rising</span>
+            <span class="card-price">$40</span>
+          </div>
+          <button type="button" class="cart-btn" data-product="matching-set" aria-label="Buy Rising">
+            <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          </button>
+        </div>
+      </article>
+
+      <article class="card" data-product="love-letter">
+        <div class="card-img">
+          <img class="card-photo" src="images/love-letter.png" alt="Self Love" width="1200" height="1200" loading="lazy" decoding="async">
+        </div>
+        <div class="card-footer">
+          <div class="card-info">
+            <span class="card-name">Self Love</span>
+            <span class="card-price">$40</span>
+          </div>
+          <button type="button" class="cart-btn" data-product="love-letter" aria-label="Buy Self Love">
+            <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          </button>
+        </div>
+      </article>
+
+      <article class="card" data-product="date-night">
+        <div class="card-img">
+          <img class="card-photo" src="images/date-night.png" alt="His &amp; Hers flower note" width="1200" height="1200" loading="lazy" decoding="async">
+        </div>
+        <div class="card-footer">
+          <div class="card-info">
+            <span class="card-name">His &amp; Hers</span>
+            <span class="card-price">$40</span>
+          </div>
+          <button type="button" class="cart-btn" data-product="date-night" aria-label="Buy His &amp; Hers">
+            <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          </button>
+        </div>
+      </article>
+
+      <article class="card" data-product="abundant">
+        <div class="card-img">
+          <img class="card-photo" src="images/abundant.png" alt="Abundant — flower note" width="771" height="1024" loading="lazy" decoding="async">
+        </div>
+        <div class="card-footer">
+          <div class="card-info">
+            <span class="card-name">Abundant</span>
+            <span class="card-price">$40</span>
+          </div>
+          <button type="button" class="cart-btn" data-product="abundant" aria-label="Buy Abundant">
+            <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          </button>
+        </div>
+      </article>
+
+    </div>
+  </section>
+</div>
+
+<div id="product-page">
+  <div class="pd-wrap">
+    <button type="button" class="pd-back" id="pd-close-top">← Back to shop</button>
+    <div class="pd-layout">
+      <div class="pd-col-media">
+        <div class="pd-hero"><img id="pd-photo" src="" alt=""></div>
+      </div>
+      <div class="pd-col-copy">
+        <div class="pd-eyeb-row">
+          <span class="pd-eyeb-line" aria-hidden="true"></span>
+          <span class="pd-eyeb" id="pd-eyeb">Little notes of joy</span>
+        </div>
+        <h1 class="pd-title" id="pd-title"></h1>
+        <div class="pd-desc-wrap">
+          <p class="pd-desc" id="pd-desc"></p>
+        </div>
+        <div class="pd-price-row">
+          <span class="pd-price" id="pd-price">$40</span>
+          <span class="pd-unit" id="pd-unit"></span>
+        </div>
+        <div class="pd-actions">
+          <button type="button" class="btn-p" id="pd-add-bag">Add to bag</button>
+          <button type="button" class="btn-s" id="pd-browse">Keep browsing</button>
+        </div>
+        <div class="pd-features">
+          <div class="pd-ft"><strong>Acid-free</strong><span>Safe for desks &amp; keepsakes</span></div>
+          <div class="pd-ft"><strong>Kind paper</strong><span>Thoughtful, soft stock</span></div>
+          <div class="pd-ft"><strong>Ships in 2 days</strong><span>Tracked wherever you are</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="auth-page">
+  <div class="auth-band" aria-hidden="true"></div>
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-toggle">
+        <button type="button" class="auth-tab is-on" id="auth-tab-signup">Create account</button>
+        <button type="button" class="auth-tab" id="auth-tab-login">Log in</button>
+      </div>
+
+      <form id="form-signup" class="auth-form" autocomplete="off">
+        <input type="text" name="company" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <label class="auth-label" for="su-identifier">Email or phone number</label>
+        <input type="text" id="su-identifier" class="auth-input" placeholder="you@email.com or +1 555 000 0000" autocomplete="username">
+        <label class="auth-label" for="su-password">Password</label>
+        <input type="password" id="su-password" class="auth-input" placeholder="Create a password" autocomplete="new-password">
+        <p class="auth-hint">Use at least 6 characters and include one special character (! @ # $ % …). After you press Create account, we send a 4-digit code to your email (or SMS when enabled)—then confirm it in the window that opens.</p>
+        <label class="auth-check">
+          <input type="checkbox" id="su-privacy">
+          <span>I agree to the <a href="privacy.html" target="_blank" rel="noopener noreferrer">privacy policy</a>.</span>
+        </label>
+        <label class="auth-check">
+          <input type="checkbox" id="su-robot">
+          <span>I confirm I am not a robot.</span>
+        </label>
+        <button type="submit" class="btn-p auth-submit" id="su-submit">Create account</button>
+      </form>
+
+      <form id="form-login" class="auth-form" style="display:none" autocomplete="on">
+        <label class="auth-label" for="li-identifier">Email or phone number</label>
+        <input type="text" id="li-identifier" class="auth-input" placeholder="you@email.com or +1 555 000 0000" autocomplete="username">
+        <label class="auth-label" for="li-password">Password</label>
+        <input type="password" id="li-password" class="auth-input" placeholder="Your password" autocomplete="current-password">
+        <button type="submit" class="btn-p auth-submit" id="li-submit">Log in</button>
+      </form>
+    </div>
+    <button type="button" class="btn-s" id="auth-back">← Back to shop</button>
+  </div>
+</div>
+
+<div id="profile-page">
+  <div class="profile-band">
+    <div class="band-deco">
+      <img class="deco-flower" src="logo-flower.png" width="1024" height="1024" alt="" decoding="async">
+    </div>
+    <div class="profile-av-wrap">
+      <div class="profile-av">
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </div>
+      <div class="av-edit">
+        <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="profile-body">
+    <h2 class="profile-name" id="profile-display-name">—</h2>
+    <p class="profile-handle" id="profile-handle">—</p>
+    <span class="profile-pill">
+      <svg viewBox="0 0 16 16"><path d="M8 1.5l1.5 3.1 3.4.5-2.5 2.4.6 3.4L8 9.3l-3 1.6.6-3.4L3.1 5.1l3.4-.5z"/></svg>
+      Connected Partner ✦
+    </span>
+
+    <div class="stats-bar">
+      <div class="stat"><span class="stat-n" id="profile-stat-gifts">0</span><span class="stat-l">Gifts</span></div>
+      <div class="stat"><span class="stat-n" id="profile-stat-moments">0</span><span class="stat-l">Moments</span></div>
+      <div class="stat"><span class="stat-n" id="profile-stat-years">0</span><span class="stat-l">Years</span></div>
+    </div>
+
+    <div class="rule"></div>
+    <p class="sec-title">Saved picks</p>
+
+    <div class="wl-grid">
+      <div class="wl-card">
+        <div class="wl-img">
+          <img class="wl-photo" src="images/matching-set.png" alt="" width="1200" height="1200" loading="lazy" decoding="async">
+        </div>
+        <div class="wl-foot">
+          <span class="wl-price">$40</span>
+          <button type="button" class="cart-btn" style="width:30px;height:30px;" data-product="matching-set" aria-label="Buy Rising">
+            <svg viewBox="0 0 24 24" style="width:13px;height:13px;"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="wl-card">
+        <div class="wl-img">
+          <img class="wl-photo" src="images/love-letter.png" alt="" width="800" height="800" loading="lazy" decoding="async">
+        </div>
+        <div class="wl-foot">
+          <span class="wl-price">$40</span>
+          <button type="button" class="cart-btn" style="width:30px;height:30px;" data-product="love-letter" aria-label="Buy Self Love">
+            <svg viewBox="0 0 24 24" style="width:13px;height:13px;"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="wl-card">
+        <div class="wl-img">
+          <img class="wl-photo" src="images/abundant.png" alt="" width="771" height="1024" loading="lazy" decoding="async">
+        </div>
+        <div class="wl-foot">
+          <span class="wl-price">$40</span>
+          <button type="button" class="cart-btn" style="width:30px;height:30px;" data-product="abundant" aria-label="Buy Abundant">
+            <svg viewBox="0 0 24 24" style="width:13px;height:13px;"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="rule"></div>
+    <p class="sec-title">Account</p>
+
+    <div class="acct-card">
+      <div class="acct-row">
+        <div class="acct-icon"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+        <div class="acct-txt"><strong>Email or phone</strong><span id="profile-acct-identifier">—</span></div>
+      </div>
+      <div class="acct-row">
+        <div class="acct-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+        <div class="acct-txt"><strong>Member since</strong><span id="profile-member-since">—</span></div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button type="button" class="btn-p" id="profile-logout">Log out</button>
+      <button type="button" class="btn-s" id="back-btn">← Back to Shop</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const toastEl = document.getElementById('toast');
+  let toastTimer;
+  const cred = { credentials: 'same-origin', headers: { 'Content-Type': 'application/json' } };
+  const BASE_DOC_TITLE = document.title;
+  var pdCheckoutProductId = null;
+
+  var PRODUCTS = {
+    'matching-set': {
+      eyebrow: 'Curated for two',
+      title: 'Rising',
+      desc: 'Heartfelt affirmations for strength, motivation, and celebrating what you achieve together—gentle reminders to believe in yourself, keep going, and tuck them where your eyes land every day.',
+      unit: '/ Bundle of different affirmations',
+      img: 'images/matching-set.png',
+      imgAlt: 'Rising flower note',
+    },
+    'love-letter': {
+      eyebrow: 'Curated for two',
+      title: 'Self Love',
+      desc: 'Prompts and stationery for letters worth revisiting—turning an ordinary evening into words you will want to reread. A quiet invitation to trust your voice and leave little anchors where you will feel them often.',
+      unit: '/ Bundle of different affirmations',
+      img: 'images/love-letter.png',
+      imgAlt: 'Self Love',
+    },
+    'date-night': {
+      eyebrow: 'Curated for two',
+      title: 'His & Hers',
+      desc: 'Written to lift the spirit in your relationship: connection, warmth, and good times at home. Each piece is a small prompt to keep showing up for each other—place them on surfaces you pass often so the words can find you daily.',
+      unit: '/ Bundle of different affirmations',
+      img: 'images/date-night.png',
+      imgAlt: 'His & Hers flower note',
+    },
+    abundant: {
+      eyebrow: 'Curated for two',
+      title: 'Abundant',
+      desc: "Soft affirmations for abundance, shared ambition, and growing what matters as a household—career, goals, and manifesting side by side. Let them live where you and your partner's plans meet real life, every day.",
+      unit: '/ Bundle of different affirmations',
+      img: 'images/abundant.png',
+      imgAlt: 'Abundant flower note',
+    },
+    'memory-journal': {
+      eyebrow: 'Curated for two',
+      title: 'Memory Journal',
+      desc: 'Space for milestones, inside jokes, and the details that slip away first—pages that ask you both to write a little, often, together. Keep the thread of your story visible; leave this somewhere daily life brings you back to it.',
+      unit: '/ shared journal',
+      img: 'images/memory-journal.png',
+      imgAlt: 'Memory Journal',
+    },
+  };
+
+  function showToast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () {
+      toastEl.classList.remove('show');
+    }, 4200);
+  }
+
+  function closeVerifyModal() {
+    var el = document.getElementById('verify-modal');
+    el.classList.remove('is-open');
+    el.setAttribute('aria-hidden', 'true');
+    document.getElementById('mv-code').value = '';
+  }
+
+  function openVerifyModal(identifierDisplay) {
+    var sub = document.getElementById('verify-sub');
+    if (identifierDisplay.indexOf('@') !== -1) {
+      sub.textContent = 'We sent a 4-digit code to ' + identifierDisplay + '. Check your inbox (or the server terminal in development).';
+    } else {
+      sub.textContent = 'We sent a 4-digit code to your number. Check your messages (or the server terminal in development).';
+    }
+    var el = document.getElementById('verify-modal');
+    el.classList.add('is-open');
+    el.setAttribute('aria-hidden', 'false');
+    document.getElementById('mv-code').value = '';
+    document.getElementById('mv-code').focus();
+  }
+
+  function showPage(p, opts) {
+    opts = opts || {};
+    closeVerifyModal();
+    document.getElementById('main-page').style.display = p === 'main' ? 'block' : 'none';
+    document.getElementById('profile-page').style.display = p === 'profile' ? 'block' : 'none';
+    document.getElementById('auth-page').style.display = p === 'auth' ? 'block' : 'none';
+    document.getElementById('product-page').style.display = p === 'product' ? 'block' : 'none';
+    if (p !== 'product') {
+      document.title = BASE_DOC_TITLE;
+    }
+    if (!opts.noScroll) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  function openProduct(id) {
+    var spec = PRODUCTS[id];
+    if (!spec) return;
+    pdCheckoutProductId = id;
+    document.getElementById('pd-eyeb').textContent = spec.eyebrow || 'Curated for two';
+    document.getElementById('pd-title').textContent = spec.title;
+    document.getElementById('pd-desc').textContent = spec.desc;
+    document.getElementById('pd-unit').textContent = spec.unit;
+    document.getElementById('pd-price').textContent = '$40';
+    var img = document.getElementById('pd-photo');
+    img.src = spec.img;
+    img.alt = spec.imgAlt || spec.title;
+    document.title = spec.title + ' · ' + BASE_DOC_TITLE;
+    showPage('product');
+  }
+
+  function scrollShop() {
+    if (document.getElementById('product-page').style.display === 'block') {
+      showPage('main', { noScroll: true });
+    }
+    document.getElementById('shop').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function setAuthMode(mode) {
+    var signup = mode === 'signup';
+    document.getElementById('form-signup').style.display = signup ? 'flex' : 'none';
+    document.getElementById('form-login').style.display = signup ? 'none' : 'flex';
+    document.getElementById('auth-tab-signup').classList.toggle('is-on', signup);
+    document.getElementById('auth-tab-login').classList.toggle('is-on', !signup);
+  }
+
+  function validatePasswordClient(pw) {
+    if (!pw || pw.length < 6) return 'Password must be at least 6 characters.';
+    if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~]/.test(pw)) {
+      return 'Password must include at least one special character.';
+    }
+    return null;
+  }
+
+  function formatMemberSince(ts) {
+    if (!ts) return '—';
+    try {
+      return new Date(ts).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+    } catch (e) {
+      return '—';
+    }
+  }
+
+  function yearsSince(ts) {
+    if (!ts) return 0;
+    var a = new Date(ts).getFullYear();
+    var b = new Date().getFullYear();
+    return Math.max(0, b - a);
+  }
+
+  function fillProfile(user) {
+    document.getElementById('profile-display-name').textContent = user.displayName || 'Member';
+    document.getElementById('profile-handle').textContent = user.handle || '—';
+    document.getElementById('profile-acct-identifier').textContent = user.identifierDisplay || '—';
+    document.getElementById('profile-member-since').textContent = formatMemberSince(user.createdAt);
+    document.getElementById('profile-stat-gifts').textContent = '0';
+    document.getElementById('profile-stat-moments').textContent = '0';
+    document.getElementById('profile-stat-years').textContent = String(yearsSince(user.createdAt));
+  }
+
+  async function openProfileOrAuth() {
+    try {
+      var res = await fetch('/api/auth/me', { credentials: 'same-origin' });
+      if (res.ok) {
+        var data = await res.json();
+        if (data.user) {
+          fillProfile(data.user);
+          showPage('profile');
+          return;
+        }
+      }
+    } catch (e) {}
+    setAuthMode('signup');
+    showPage('auth');
+  }
+
+  document.getElementById('nav-home').addEventListener('click', async function () {
+    try {
+      await fetch('/api/auth/cancel-signup', { method: 'POST', credentials: 'same-origin' });
+    } catch (e) {}
+    showPage('main');
+  });
+  document.getElementById('nav-profile-btn').addEventListener('click', openProfileOrAuth);
+  document.getElementById('back-btn').addEventListener('click', function () { showPage('main'); });
+  document.getElementById('nav-cart-btn').addEventListener('click', scrollShop);
+  document.getElementById('hero-shop-btn').addEventListener('click', scrollShop);
+
+  document.querySelector('#shop .cards-grid').addEventListener('click', function (ev) {
+    var card = ev.target.closest('article.card[data-product]');
+    if (!card || ev.target.closest('.cart-btn')) return;
+    openProduct(card.getAttribute('data-product'));
+  });
+
+  document.getElementById('pd-close-top').addEventListener('click', function () { showPage('main'); });
+  document.getElementById('pd-browse').addEventListener('click', function () { showPage('main'); });
+  document.getElementById('pd-add-bag').addEventListener('click', function () {
+    var id = pdCheckoutProductId;
+    if (!id) return;
+    startCheckout(id, document.getElementById('pd-add-bag'));
+  });
+
+  document.getElementById('auth-back').addEventListener('click', async function () {
+    try {
+      await fetch('/api/auth/cancel-signup', { method: 'POST', credentials: 'same-origin' });
+    } catch (e) {}
+    showPage('main');
+  });
+
+  document.getElementById('auth-tab-signup').addEventListener('click', function () { setAuthMode('signup'); });
+  document.getElementById('auth-tab-login').addEventListener('click', async function () {
+    try {
+      await fetch('/api/auth/cancel-signup', { method: 'POST', credentials: 'same-origin' });
+    } catch (e) {}
+    closeVerifyModal();
+    setAuthMode('login');
+  });
+
+  document.getElementById('form-signup').addEventListener('submit', async function (ev) {
+    ev.preventDefault();
+    var identifier = document.getElementById('su-identifier').value.trim();
+    var password = document.getElementById('su-password').value;
+    var agreePrivacy = document.getElementById('su-privacy').checked;
+    var notRobot = document.getElementById('su-robot').checked;
+    var hp = document.querySelector('#form-signup input[name="company"]').value;
+
+    if (!identifier) {
+      showToast('Enter your email or phone number.');
+      return;
+    }
+    var pwErr = validatePasswordClient(password);
+    if (pwErr) {
+      showToast(pwErr);
+      return;
+    }
+    if (!agreePrivacy) {
+      showToast('Please agree to the privacy policy.');
+      return;
+    }
+    if (!notRobot) {
+      showToast('Please confirm you are not a robot.');
+      return;
+    }
+
+    var btn = document.getElementById('su-submit');
+    btn.disabled = true;
+    try {
+      var res = await fetch('/api/auth/start-signup', Object.assign({}, cred, {
+        method: 'POST',
+        body: JSON.stringify({
+          identifier: identifier,
+          password: password,
+          agreePrivacy: true,
+          notRobot: true,
+          company: hp,
+        }),
+      }));
+      var data = await res.json().catch(function () { return {}; });
+      if (!res.ok) {
+        showToast(data.error || 'Could not start sign up.');
+        return;
+      }
+      if (data.devCode) {
+        showToast('Dev: code is ' + data.devCode + ' (also in server terminal). Enter it below.');
+      } else {
+        showToast('Check your email for a 4-digit code.');
+      }
+      openVerifyModal(identifier);
+    } catch (e) {
+      showToast('Network error.');
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  document.getElementById('mv-verify').addEventListener('click', async function () {
+    var code = document.getElementById('mv-code').value.replace(/\D/g, '').slice(0, 4);
+    if (code.length !== 4) {
+      showToast('Enter all 4 digits.');
+      return;
+    }
+    var btn = document.getElementById('mv-verify');
+    btn.disabled = true;
+    try {
+      var res = await fetch('/api/auth/verify-signup', Object.assign({}, cred, {
+        method: 'POST',
+        body: JSON.stringify({ code: code }),
+      }));
+      var data = await res.json().catch(function () { return {}; });
+      if (!res.ok) {
+        showToast(data.error || 'Verification failed.');
+        return;
+      }
+      if (data.user) {
+        closeVerifyModal();
+        fillProfile(data.user);
+        showToast('Welcome! Your account is ready.');
+        showPage('profile');
+      }
+    } catch (e) {
+      showToast('Network error.');
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  document.getElementById('mv-resend').addEventListener('click', async function () {
+    var btn = document.getElementById('mv-resend');
+    btn.disabled = true;
+    try {
+      var res = await fetch('/api/auth/resend-signup-code', Object.assign({}, cred, { method: 'POST', body: '{}' }));
+      var data = await res.json().catch(function () { return {}; });
+      if (!res.ok) {
+        showToast(data.error || 'Could not resend.');
+        return;
+      }
+      if (data.devCode) {
+        showToast('New dev code: ' + data.devCode);
+      } else {
+        showToast('A new code was sent.');
+      }
+    } catch (e) {
+      showToast('Network error.');
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  document.getElementById('mv-cancel').addEventListener('click', async function () {
+    try {
+      await fetch('/api/auth/cancel-signup', { method: 'POST', credentials: 'same-origin' });
+    } catch (e) {}
+    closeVerifyModal();
+    showToast('Sign up cancelled.');
+  });
+
+  document.getElementById('form-login').addEventListener('submit', async function (ev) {
+    ev.preventDefault();
+    var identifier = document.getElementById('li-identifier').value.trim();
+    var password = document.getElementById('li-password').value;
+    if (!identifier || !password) {
+      showToast('Enter your email or phone and password.');
+      return;
+    }
+    var btn = document.getElementById('li-submit');
+    btn.disabled = true;
+    try {
+      var res = await fetch('/api/auth/login', Object.assign({}, cred, {
+        method: 'POST',
+        body: JSON.stringify({ identifier: identifier, password: password }),
+      }));
+      var data = await res.json().catch(function () { return {}; });
+      if (!res.ok) {
+        showToast(data.error || 'Log in failed.');
+        return;
+      }
+      if (data.user) {
+        fillProfile(data.user);
+        showPage('profile');
+      }
+    } catch (e) {
+      showToast('Network error.');
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  document.getElementById('profile-logout').addEventListener('click', async function () {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' });
+    } catch (e) {}
+    showToast('You are logged out.');
+    setAuthMode('signup');
+    showPage('auth');
+  });
+
+  async function startCheckout(productId, btn) {
+    if (!productId || !btn || btn.disabled) return;
+    var orig = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:#7b6fb0;fill:none;stroke-width:2.2;animation:spin 0.7s linear infinite"><circle cx="12" cy="12" r="9" opacity="0.22"/><path d="M21 12a9 9 0 0 0-9-9" stroke-linecap="round"/></svg>';
+    try {
+      var res = await fetch('/api/create-checkout-session', Object.assign({}, cred, {
+        method: 'POST',
+        body: JSON.stringify({ productId: productId }),
+      }));
+      var data = await res.json().catch(function () { return {}; });
+      if (!res.ok) {
+        showToast(data.error || 'Checkout could not start. Check server logs.');
+        return;
+      }
+      if (data.url) {
+        window.location.href = data.url;
+        return;
+      }
+      showToast('No checkout URL returned.');
+    } catch (e) {
+      showToast('Network error — is the server running?');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = orig;
+    }
+  }
+
+  document.querySelectorAll('.cart-btn[data-product]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      startCheckout(btn.getAttribute('data-product'), btn);
+    });
+  });
+})();
+</script>
+</body>
+</html>
