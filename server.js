@@ -375,6 +375,26 @@ app.get("/api/auth/me", (req, res) => {
   });
 });
 
+function mergeCheckoutItems(body) {
+  const raw = body?.items;
+  if (Array.isArray(raw) && raw.length) {
+    const map = new Map();
+    for (const row of raw) {
+      const id = String(row?.productId || "").trim();
+      if (!id) continue;
+      const q = Math.min(99, Math.max(1, parseInt(row?.quantity, 10) || 1));
+      map.set(id, (map.get(id) || 0) + q);
+    }
+    return [...map.entries()].map(([productId, quantity]) => ({
+      productId,
+      quantity,
+    }));
+  }
+  const single = String(body?.productId || "").trim();
+  if (single) return [{ productId: single, quantity: 1 }];
+  return [];
+}
+
 app.post("/api/create-checkout-session", async (req, res) => {
   try {
     if (!stripe) {
@@ -384,28 +404,46 @@ app.post("/api/create-checkout-session", async (req, res) => {
       });
     }
 
-    const productId = String(req.body?.productId || "");
-    const priceId = priceByProduct[productId];
-
-    if (!priceId) {
+    const merged = mergeCheckoutItems(req.body || {});
+    if (!merged.length) {
       return res.status(400).json({
-        error: "Unknown product. Check productId and Stripe price env vars.",
+        error: "Send productId or a non-empty items array with productId and quantity.",
       });
+    }
+
+    const line_items = [];
+    for (const { productId, quantity } of merged) {
+      const priceId = priceByProduct[productId];
+      if (!priceId) {
+        return res.status(400).json({
+          error: `Unknown or unpriced product: ${productId}. Check Stripe price env vars.`,
+        });
+      }
+      line_items.push({ price: priceId, quantity });
     }
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
-      line_items: [{ price: priceId, quantity: 1 }],
+      line_items,
       success_url: `${publicBase}/success.html?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${publicBase}/cancel.html`,
+      cancel_url: `${publicBase}/`,
       allow_promotion_codes: true,
     });
 
     return res.json({ url: session.url });
   } catch (err) {
     console.error(err);
+    const stripeMsg =
+      err?.raw?.message ||
+      err?.message ||
+      "Could not start checkout";
+    const code = err?.raw?.code;
+    const hint =
+      code === "resource_missing" && String(err?.raw?.param || "").includes("price")
+        ? " Check that each STRIPE_PRICE_* in .env is a real Price ID from the same Stripe account and mode (Live vs Test) as your secret key."
+        : "";
     return res.status(500).json({
-      error: err.message || "Could not start checkout",
+      error: stripeMsg + hint,
     });
   }
 });
