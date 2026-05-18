@@ -530,7 +530,7 @@
     .cart-snackbar p{margin:0 0 14px;font-size:0.88rem;line-height:1.45;color:var(--text-mid);text-align:center;}
     .cart-snackbar p strong{color:var(--text);font-weight:500;}
     .cart-snackbar-actions{display:flex;flex-direction:column;gap:10px;}
-    .cart-snackbar-actions .btn-p,.cart-snackbar-actions .btn-s{padding:12px 18px;font-size:0.72rem;}
+    .cart-snackbar-actions .btn-p,.cart-snackbar-actions .btn-s{padding:12px 18px;font-size:0.72rem;width:100%;}
 
     @keyframes spin{to{transform:rotate(360deg);}}
 
@@ -575,7 +575,7 @@
 <div id="cart-snackbar" class="cart-snackbar" role="status" aria-hidden="true">
   <p id="cart-snackbar-msg"><strong>Added to your bag.</strong> Ready when you are.</p>
   <div class="cart-snackbar-actions">
-    <a href="cart.html" class="btn-p" id="cart-snack-view" style="text-align:center;text-decoration:none;display:block;">View cart</a>
+    <button type="button" class="btn-p" id="cart-snack-checkout">Checkout</button>
     <button type="button" class="btn-s" id="cart-snack-continue">Continue shopping</button>
   </div>
 </div>
@@ -700,7 +700,6 @@
         </div>
         <div class="pd-actions">
           <button type="button" class="btn-p" id="pd-add-bag">Add to bag</button>
-          <button type="button" class="btn-s" id="pd-browse">Keep browsing</button>
         </div>
         <div class="pd-features">
           <div class="pd-ft"><strong>Acid-free</strong><span>Safe for desks &amp; keepsakes</span></div>
@@ -985,11 +984,16 @@
     var spec = PRODUCTS[productId];
     var title = spec ? spec.title : 'Item';
     var msgEl = document.getElementById('cart-snackbar-msg');
+    var chk = document.getElementById('cart-snack-checkout');
+    if (chk) {
+      chk.disabled = false;
+      chk.textContent = 'Checkout';
+    }
     if (msgEl) {
       msgEl.innerHTML =
         '<strong>' +
         escapeHtml(title) +
-        '</strong> is in your bag. Check out when you are ready, or keep browsing.';
+        '</strong> is in your bag. Check out when you are ready.';
     }
     var bar = document.getElementById('cart-snackbar');
     if (!bar) return;
@@ -997,6 +1001,43 @@
     bar.setAttribute('aria-hidden', 'false');
     clearTimeout(cartSnackTimer);
     cartSnackTimer = setTimeout(hideCartSnackbar, 14000);
+  }
+
+  async function checkoutBagFromSnackbar(btn) {
+    var items = getCart();
+    if (!items.length) {
+      showToast('Your bag is empty.');
+      return;
+    }
+    var el = btn || document.getElementById('cart-snack-checkout');
+    if (!el || el.disabled) return;
+    var orig = el.textContent;
+    el.disabled = true;
+    el.innerHTML =
+      '<svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.2;animation:spin 0.7s linear infinite;vertical-align:-2px;margin-right:6px;display:inline-block"><circle cx="12" cy="12" r="9" opacity="0.22"/><path d="M21 12a9 9 0 0 0-9-9" stroke-linecap="round"/></svg> Loading…';
+    try {
+      var res = await fetch('/api/create-checkout-session', Object.assign({}, cred, {
+        method: 'POST',
+        body: JSON.stringify({ items: items }),
+      }));
+      var data = await res.json().catch(function () {
+        return {};
+      });
+      if (!res.ok) {
+        showToast(data.error || 'Checkout could not start. Check server logs.');
+        return;
+      }
+      if (data.url) {
+        window.location.href = data.url;
+        return;
+      }
+      showToast('No checkout URL returned.');
+    } catch (e) {
+      showToast('Network error — is the server running?');
+    } finally {
+      el.disabled = false;
+      el.textContent = orig;
+    }
   }
 
   function showToast(msg) {
@@ -1143,7 +1184,6 @@
   });
 
   document.getElementById('pd-close-top').addEventListener('click', function () { showPage('main'); });
-  document.getElementById('pd-browse').addEventListener('click', function () { showPage('main'); });
   document.getElementById('pd-add-bag').addEventListener('click', function () {
     var id = pdCheckoutProductId;
     if (!id) return;
@@ -1325,8 +1365,12 @@
     showPage('auth');
   });
 
+  document.getElementById('cart-snack-checkout').addEventListener('click', function () {
+    checkoutBagFromSnackbar(this);
+  });
   document.getElementById('cart-snack-continue').addEventListener('click', function () {
     hideCartSnackbar();
+    scrollShop();
   });
 
   document.querySelectorAll('.cart-btn[data-product]').forEach(function (btn) {
