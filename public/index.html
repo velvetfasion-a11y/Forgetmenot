@@ -380,7 +380,7 @@
     <div class="hero-content">
       <img class="flower-logo" src="logo-flower.png" width="1024" height="1024" alt="Forget Me Not" decoding="async">
       <h1 class="hero-title">Forget <span class="accent">Me</span> Not</h1>
-      <p class="hero-tagline">Connect with your partner <em>in home and mind</em></p>
+      <p class="hero-tagline">Bundle of sticky notes to put around your home</p>
       <button type="button" class="hero-cta" id="hero-shop-btn">✿ &nbsp;Shop Together</button>
     </div>
   </section>
@@ -655,7 +655,7 @@
     cartSnackTimer = setTimeout(hideCartSnackbar, 14000);
   }
 
-  async function checkoutBagFromSnackbar(btn) {
+  function checkoutBagFromSnackbar(btn) {
     var items = getCart();
     if (!items.length) {
       showToast('Your bag is empty.');
@@ -663,33 +663,7 @@
     }
     var el = btn || document.getElementById('cart-snack-checkout');
     if (!el || el.disabled) return;
-    var orig = el.textContent;
-    el.disabled = true;
-    el.innerHTML =
-      '<svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.2;animation:spin 0.7s linear infinite;vertical-align:-2px;margin-right:6px;display:inline-block"><circle cx="12" cy="12" r="9" opacity="0.22"/><path d="M21 12a9 9 0 0 0-9-9" stroke-linecap="round"/></svg> Loading…';
-    try {
-      var res = await fetch('/api/create-checkout-session', Object.assign({}, cred, {
-        method: 'POST',
-        body: JSON.stringify({ items: items }),
-      }));
-      var data = await res.json().catch(function () {
-        return {};
-      });
-      if (!res.ok) {
-        showToast(data.error || 'Checkout could not start. Check server logs.');
-        return;
-      }
-      if (data.url) {
-        window.location.href = data.url;
-        return;
-      }
-      showToast('No checkout URL returned.');
-    } catch (e) {
-      showToast('Network error — is the server running?');
-    } finally {
-      el.disabled = false;
-      el.textContent = orig;
-    }
+    window.location.href = 'checkout-elements.html';
   }
 
   function showToast(msg) {

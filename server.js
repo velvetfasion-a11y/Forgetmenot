@@ -395,6 +395,86 @@ function mergeCheckoutItems(body) {
   return [];
 }
 
+/** Sum cart lines using live Stripe Price.unit_amount (trusted server-side total). */
+async function computeCartTotalCents(merged) {
+  let total = 0;
+  for (const { productId, quantity } of merged) {
+    const priceId = priceByProduct[productId];
+    if (!priceId) {
+      const err = new Error(`Unknown or unpriced product: ${productId}`);
+      err.statusCode = 400;
+      throw err;
+    }
+    const price = await stripe.prices.retrieve(priceId);
+    const unit = price.unit_amount;
+    if (unit == null || unit < 0) {
+      const err = new Error(
+        `Price ${priceId} has no fixed unit_amount (use standard per-unit prices).`
+      );
+      err.statusCode = 400;
+      throw err;
+    }
+    total += unit * quantity;
+  }
+  return total;
+}
+
+/**
+ * Embedded Elements checkout: creates a PaymentIntent and returns client_secret.
+ * Amount is computed from cart items + your Stripe Price IDs (never trust client totals).
+ */
+app.post("/api/create-payment-intent", async (req, res) => {
+  try {
+    if (!stripe) {
+      return res.status(503).json({
+        error:
+          "Stripe is not configured. Add STRIPE_SECRET_KEY to your .env file.",
+      });
+    }
+
+    const merged = mergeCheckoutItems(req.body || {});
+    if (!merged.length) {
+      return res.status(400).json({
+        error: "Send a non-empty items array with productId and quantity.",
+      });
+    }
+
+    const amount = await computeCartTotalCents(merged);
+    if (amount < 50) {
+      return res.status(400).json({
+        error: "Order total is below the minimum charge amount (50 cents).",
+      });
+    }
+
+    const metaSummary = merged
+      .map(({ productId, quantity }) => `${productId}:${quantity}`)
+      .join("|")
+      .slice(0, 450);
+
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount,
+      currency: "usd",
+      automatic_payment_methods: { enabled: true },
+      description: "Forget Me Not — shop order",
+      metadata: { cart: metaSummary },
+    });
+
+    return res.json({
+      clientSecret: paymentIntent.client_secret,
+      amount,
+      currency: "usd",
+    });
+  } catch (err) {
+    console.error(err);
+    if (err && err.statusCode === 400) {
+      return res.status(400).json({ error: err.message });
+    }
+    const stripeMsg =
+      err?.raw?.message || err?.message || "Could not create payment.";
+    return res.status(500).json({ error: stripeMsg });
+  }
+});
+
 app.post("/api/create-checkout-session", async (req, res) => {
   try {
     if (!stripe) {

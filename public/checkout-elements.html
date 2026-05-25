@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout — Forget Me Not</title>
+  <link rel="icon" href="favicon.png" type="image/png" sizes="64x64">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://js.stripe.com/v3/"></script>
+  <style>
+    :root {
+      --purple-deep: #7b6fb0;
+      --purple-light: #c4bde0;
+      --purple-pale: #ece9f8;
+      --text: #2d2640;
+      --text-mid: #7a7390;
+      --white: #fff;
+      --radius: 16px;
+      --shadow: 0 16px 48px rgba(123, 111, 176, 0.15);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "DM Sans", system-ui, sans-serif;
+      background: linear-gradient(165deg, var(--purple-pale) 0%, #faf9fd 45%, #fff 100%);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 72px 20px 48px;
+    }
+    .shell { max-width: 520px; margin: 0 auto; }
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .top-bar a {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--purple-deep);
+      text-decoration: none;
+    }
+    .top-bar a:hover { text-decoration: underline; }
+    h1 {
+      font-family: "Playfair Display", Georgia, serif;
+      font-size: clamp(1.5rem, 4.5vw, 2rem);
+      font-style: italic;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .subtitle { font-size: 0.88rem; color: var(--text-mid); margin-bottom: 28px; line-height: 1.45; }
+    .card {
+      background: var(--white);
+      border-radius: var(--radius);
+      border: 1px solid rgba(196, 189, 224, 0.55);
+      box-shadow: var(--shadow);
+      padding: 22px 20px 24px;
+      margin-bottom: 16px;
+    }
+    .card h2 {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-mid);
+      margin-bottom: 14px;
+    }
+    #express-checkout { min-height: 52px; margin-bottom: 4px; }
+    #address-element, #payment-element { margin-top: 4px; }
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--purple-pale);
+    }
+    .summary-row:last-of-type { border-bottom: none; }
+    .summary-row.muted { color: var(--text-mid); font-size: 0.82rem; }
+    .summary-total {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-top: 12px;
+      padding-top: 14px;
+      border-top: 2px solid var(--purple-pale);
+    }
+    .summary-total span:first-child {
+      font-family: "Playfair Display", serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+    }
+    .summary-total strong {
+      font-family: "Playfair Display", serif;
+      font-size: 1.35rem;
+      color: var(--purple-deep);
+    }
+    #global-error {
+      background: #fff0f0;
+      border: 1px solid #f5c2c7;
+      color: #842029;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      margin-bottom: 16px;
+      display: none;
+    }
+    #global-error.show { display: block; }
+    #field-errors {
+      color: #b42318;
+      font-size: 0.82rem;
+      margin-top: 10px;
+      min-height: 1.2em;
+    }
+    .pay-wrap { margin-top: 22px; }
+    #submit {
+      width: 100%;
+      padding: 16px 24px;
+      border: none;
+      border-radius: 999px;
+      background: var(--purple-deep);
+      color: #fff;
+      font-family: "DM Sans", sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(123, 111, 176, 0.35);
+      transition: transform 0.15s, background 0.15s;
+    }
+    #submit:hover:not(:disabled) {
+      background: #5d5289;
+      transform: translateY(-1px);
+    }
+    #submit:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+    .note {
+      text-align: center;
+      font-size: 0.72rem;
+      color: var(--text-mid);
+      margin-top: 14px;
+      line-height: 1.5;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .empty-state p { color: var(--text-mid); margin-bottom: 20px; }
+    .empty-state a {
+      display: inline-block;
+      padding: 12px 28px;
+      background: var(--purple-deep);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="top-bar">
+      <a href="cart.html">← Bag</a>
+      <a href="index.html">Shop</a>
+    </div>
+
+    <div id="empty-state" class="empty-state" style="display:none">
+      <h1>Your bag is empty</h1>
+      <p>Add something before checking out.</p>
+      <a href="index.html#shop">Browse products</a>
+    </div>
+
+    <div id="checkout-main" style="display:none">
+      <h1>Checkout</h1>
+      <p class="subtitle">Pay on this page with Apple Pay, Google Pay, or card. Shipping is free.</p>
+
+      <div id="global-error" role="alert"></div>
+
+      <div class="card" id="summary-card">
+        <h2>Order</h2>
+        <div id="summary-lines"></div>
+        <div class="summary-row muted">Shipping</div>
+        <div class="summary-row muted" style="border:none;padding-top:2px">Free</div>
+        <div class="summary-total">
+          <span>Total</span>
+          <strong id="summary-total">—</strong>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Express checkout</h2>
+        <p class="subtitle" style="margin-bottom:12px;font-size:0.8rem">Wallets (Apple Pay, Google Pay, Link, etc.) appear when your browser and Stripe settings allow. Production Apple Pay needs your domain verified under Payments → Apple Pay in the Stripe Dashboard.</p>
+        <div id="express-checkout"></div>
+      </div>
+
+      <div class="card">
+        <h2>Shipping address</h2>
+        <div id="address-element"></div>
+      </div>
+
+      <div class="card">
+        <h2>Card or bank</h2>
+        <div id="payment-element"></div>
+        <div id="field-errors"></div>
+      </div>
+
+      <div class="pay-wrap">
+        <button type="button" id="submit">Pay now</button>
+        <p class="note">Payments are processed securely by Stripe. You will not leave this site unless your bank requires an extra step.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  (function () {
+    var CART_KEY = 'fmn_cart_v1';
+    var LABELS = {
+      'matching-set': 'Rising',
+      'love-letter': 'Self Love',
+      'date-night': 'His & Hers',
+      abundant: 'Abundant',
+      'memory-journal': 'Memory Journal',
+    };
+
+    function getCartLines() {
+      try {
+        var raw = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+        if (!Array.isArray(raw)) return [];
+        var map = {};
+        raw.forEach(function (row) {
+          if (!row || !row.productId) return;
+          var q = Math.min(99, Math.max(1, parseInt(row.quantity, 10) || 1));
+          var id = String(row.productId);
+          map[id] = (map[id] || 0) + q;
+        });
+        return Object.keys(map).map(function (id) {
+          return { productId: id, quantity: Math.min(99, map[id]) };
+        });
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function formatMoney(cents) {
+      if (typeof cents !== 'number') return '—';
+      return new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(cents / 100);
+    }
+
+    function showGlobal(msg) {
+      var el = document.getElementById('global-error');
+      el.textContent = msg;
+      el.classList.add('show');
+    }
+
+    function hideGlobal() {
+      document.getElementById('global-error').classList.remove('show');
+    }
+
+    var stripe = null;
+    var elements = null;
+    var clientSecret = null;
+    var returnUrl = window.location.origin + '/success.html';
+
+    async function confirmOrder() {
+      var errField = document.getElementById('field-errors');
+      errField.textContent = '';
+      hideGlobal();
+
+      var submitError = (await elements.submit()).error;
+      if (submitError) {
+        errField.textContent = submitError.message;
+        return false;
+      }
+
+      var result = await stripe.confirmPayment({
+        elements: elements,
+        confirmParams: {
+          return_url: returnUrl,
+        },
+        redirect: 'if_required',
+      });
+
+      if (result.error) {
+        errField.textContent = result.error.message;
+        return false;
+      }
+
+      try {
+        localStorage.removeItem(CART_KEY);
+      } catch (e) {}
+
+      window.location.href = 'success.html';
+      return true;
+    }
+
+    async function boot() {
+      var lines = getCartLines();
+      if (!lines.length) {
+        document.getElementById('empty-state').style.display = 'block';
+        return;
+      }
+
+      document.getElementById('checkout-main').style.display = 'block';
+
+      var cfgRes = await fetch('/api/stripe-config', { credentials: 'same-origin' });
+      var cfg = await cfgRes.json().catch(function () { return {}; });
+      if (!cfg.publishableKey) {
+        showGlobal('Stripe is not configured. Add STRIPE_PUBLISHABLE_KEY to your .env and restart the server.');
+        return;
+      }
+
+      stripe = Stripe(cfg.publishableKey);
+
+      var piRes = await fetch('/api/create-payment-intent', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: lines }),
+      });
+      var piData = await piRes.json().catch(function () { return {}; });
+      if (!piRes.ok) {
+        showGlobal(piData.error || 'Could not start checkout.');
+        return;
+      }
+      clientSecret = piData.clientSecret;
+      if (!clientSecret) {
+        showGlobal('No client secret returned from the server.');
+        return;
+      }
+
+      var sumEl = document.getElementById('summary-total');
+      sumEl.textContent = formatMoney(piData.amount);
+
+      var host = document.getElementById('summary-lines');
+      host.innerHTML = lines.map(function (row) {
+        var name = LABELS[row.productId] || row.productId;
+        return (
+          '<div class="summary-row"><span>' + name + ' × ' + row.quantity + '</span></div>'
+        );
+      }).join('');
+
+      elements = stripe.elements({
+        clientSecret: clientSecret,
+        appearance: {
+          theme: 'stripe',
+          variables: {
+            colorPrimary: '#7b6fb0',
+            colorBackground: '#ffffff',
+            colorText: '#2d2640',
+            colorDanger: '#b42318',
+            borderRadius: '10px',
+            fontFamily: '"DM Sans", system-ui, sans-serif',
+          },
+          rules: {
+            '.Input': { borderColor: '#c4bde0' },
+            '.Input:focus': { borderColor: '#7b6fb0', boxShadow: '0 0 0 1px #7b6fb0' },
+          },
+        },
+      });
+
+      var expressCheckoutElement = elements.create('expressCheckout', {
+        layout: { maxColumns: 4, overflow: 'auto' },
+        // 'always' surfaces Apple Pay on desktop Chrome (macOS) and without a saved Wallet card;
+        // Stripe still hides it if the domain is not Apple Pay–enabled or the browser cannot use it.
+        paymentMethods: {
+          applePay: 'always',
+          googlePay: 'always',
+        },
+      });
+      expressCheckoutElement.mount('#express-checkout');
+
+      expressCheckoutElement.on('confirm', async function () {
+        document.getElementById('submit').disabled = true;
+        await confirmOrder();
+        document.getElementById('submit').disabled = false;
+      });
+
+      var addressElement = elements.create('address', {
+        mode: 'shipping',
+        fields: { phone: 'always' },
+      });
+      addressElement.mount('#address-element');
+
+      var paymentElement = elements.create('payment', {
+        layout: { type: 'tabs', defaultCollapsed: false },
+      });
+      paymentElement.mount('#payment-element');
+
+      document.getElementById('submit').addEventListener('click', async function () {
+        var btn = document.getElementById('submit');
+        btn.disabled = true;
+        await confirmOrder();
+        btn.disabled = false;
+      });
+    }
+
+    boot().catch(function (e) {
+      console.error(e);
+      showGlobal('Something went wrong loading checkout.');
+      document.getElementById('checkout-main').style.display = 'block';
+    });
+  })();
+  </script>
+</body>
+</html>

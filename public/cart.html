@@ -339,40 +339,14 @@
     if (totalEl) totalEl.textContent = formatMoney(total);
   }
 
-  async function checkoutWithStripe(btn) {
+  function checkoutWithStripe(btn) {
     var items = getCart();
     if (!items.length) {
       showToast('Your bag is empty.');
       return;
     }
     if (!btn || btn.disabled) return;
-    var orig = btn.innerHTML;
-    btn.disabled = true;
-    btn.innerHTML =
-      '<svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2.2;animation:spin 0.7s linear infinite;vertical-align:-3px;margin-right:8px;display:inline-block"><circle cx="12" cy="12" r="9" opacity="0.22"/><path d="M21 12a9 9 0 0 0-9-9" stroke-linecap="round"/></svg> Loading…';
-    try {
-      var res = await fetch('/api/create-checkout-session', Object.assign({}, cred, {
-        method: 'POST',
-        body: JSON.stringify({ items: items }),
-      }));
-      var data = await res.json().catch(function () {
-        return {};
-      });
-      if (!res.ok) {
-        showToast(data.error || 'Checkout could not start.');
-        return;
-      }
-      if (data.url) {
-        window.location.href = data.url;
-        return;
-      }
-      showToast('No checkout URL returned.');
-    } catch (e) {
-      showToast('Network error — is the server running?');
-    } finally {
-      btn.disabled = false;
-      btn.innerHTML = orig;
-    }
+    window.location.href = 'checkout-elements.html';
   }
 
   document.getElementById('cart-back-shop').addEventListener('click', function () {

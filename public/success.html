@@ -53,7 +53,16 @@
   <div class="card">
     <h1>Thank you</h1>
     <p>Your payment went through. You will receive a confirmation from Stripe by email.</p>
-    <a href="/">Back to shop</a>
+    <a href="index.html">Back to shop</a>
   </div>
+  <script>
+    (function () {
+      try {
+        if (new URLSearchParams(window.location.search).has('payment_intent')) {
+          localStorage.removeItem('fmn_cart_v1');
+        }
+      } catch (e) {}
+    })();
+  </script>
 </body>
 </html>
